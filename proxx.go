@@ -35,7 +35,21 @@ func (cell *Cell) Value() (int, error) {
 	return cell.value, nil
 }
 
+type CellGenerator func(column, row uint) Cell
+
 type Board struct {
 	cells [][]Cell
-	size  int
+	size  uint
+}
+
+func NewBoard(size uint, generator CellGenerator) Board {
+	cells := make([][]Cell, size)
+
+	for column := uint(0); column < size; column++ {
+		for row := uint(0); row < size; row++ {
+			cells[column][row] = generator(column, row)
+		}
+	}
+
+	return Board{cells: cells, size: size}
 }
