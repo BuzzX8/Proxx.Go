@@ -3,32 +3,30 @@ package proxx
 import "errors"
 
 type Cell struct {
-	value  int
+	value  uint
+	isHole bool
 	isOpen bool
 }
 
-func NewCell(value int) (Cell, error) {
-	if value < 0 {
-		return Cell{}, errors.New("argument exception")
-	}
+func NewCell(value uint) Cell {
 
-	return Cell{value: value, isOpen: false}, nil
+	return Cell{value: value}
 }
 
 func NewHoleCell() Cell {
-	return Cell{value: -1, isOpen: false}
+	return Cell{isHole: true}
 }
 
 func (cell *Cell) IsHole() bool {
-	return cell.value <= 0
+	return cell.isHole
 }
 
 func (cell *Cell) IsOpen() bool {
 	return cell.isOpen
 }
 
-func (cell *Cell) Value() (int, error) {
-	if cell.value < 0 {
+func (cell *Cell) Value() (uint, error) {
+	if cell.isHole {
 		return 0, errors.New("this is hole")
 	}
 
@@ -46,10 +44,15 @@ func NewBoard(size uint, generator CellGenerator) Board {
 	cells := make([][]Cell, size)
 
 	for column := uint(0); column < size; column++ {
+		cells[column] = make([]Cell, size)
 		for row := uint(0); row < size; row++ {
 			cells[column][row] = generator(column, row)
 		}
 	}
 
 	return Board{cells: cells, size: size}
+}
+
+func GetCell(column, row uint) (*Cell, error) {
+	panic(`not implemented`)
 }
