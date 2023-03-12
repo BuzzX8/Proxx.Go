@@ -1,6 +1,8 @@
 package proxx
 
-import "errors"
+import (
+	"errors"
+)
 
 type Cell struct {
 	value  uint
@@ -70,9 +72,21 @@ func (board *Board) GetCell(column, row uint) (*Cell, error) {
 }
 
 func (board *Board) GameState() GameState {
-	panic("not implemented")
+
+	return InProgress
 }
 
 func (board *Board) OpenCell(column, row uint) error {
-	panic("not implemented")
+	if column >= board.size || row >= board.size {
+		return errors.New("invalid arguments")
+	}
+
+	cell := &board.cells[column][row]
+	cell.isOpen = true
+
+	return nil
+}
+
+func (board *Board) Size() uint {
+	return board.size
 }
