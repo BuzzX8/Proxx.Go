@@ -9,11 +9,12 @@ import (
 
 func main() {
 	board := generateBoard(3, 3)
+	renderBoard(&board)
 
 	for board.GameState() == proxx.InProgress {
-		renderBoard(&board)
 		column, row := getUserInput()
 		board.OpenCell(column, row)
+		renderBoard(&board)
 	}
 
 	switch board.GameState() {
@@ -24,43 +25,46 @@ func main() {
 	}
 }
 
-func getUserInput() (column, row uint) {
+func getUserInput() (column, row int) {
 	var colStr, rowStr string
 
 	fmt.Print("Enter column index: ")
 	fmt.Scanln(&colStr)
 
-	c, _ := strconv.ParseUint(colStr, 10, 64)
+	c, _ := strconv.ParseInt(colStr, 10, 64)
 
 	fmt.Print("Enter row index: ")
 	fmt.Scanln(&rowStr)
 
-	r, _ := strconv.ParseUint(rowStr, 10, 64)
+	r, _ := strconv.ParseInt(rowStr, 10, 64)
 
-	column, row = uint(c), uint(r)
+	column, row = int(c), int(r)
 	return
 }
 
-func generateBoard(size, holeCount uint) proxx.Board {
-	holesPosition := make([]struct{ column, row uint }, holeCount)
+func generateBoard(size, holeCount int) proxx.Board {
+	holesPosition := make([]struct{ column, row int }, holeCount)
 
 	for i := 0; i < int(holeCount); i++ {
 
 	}
 
-	return proxx.NewBoard(size, func(column, row uint) proxx.Cell {
+	board, _ := proxx.NewBoard(size, func(column, row int) proxx.Cell {
 		for _, hole := range holesPosition {
 			if hole.column == column && hole.row == row {
 				return proxx.NewHoleCell()
 			}
 		}
-		return proxx.NewCell(uint(rand.Intn(4)))
+		cell, _ := proxx.NewCell(rand.Intn(4))
+		return cell
 	})
+
+	return board
 }
 
 func renderBoard(board *proxx.Board) {
-	for row := uint(0); row < board.Size(); row++ {
-		for column := uint(0); column < board.Size(); column++ {
+	for row := 0; row < board.Size(); row++ {
+		for column := 0; column < board.Size(); column++ {
 			cell, _ := board.GetCell(column, row)
 			fmt.Print("|")
 			renderCell(cell)
