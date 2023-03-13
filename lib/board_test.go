@@ -1,4 +1,4 @@
-package proxx
+package lib
 
 import "testing"
 

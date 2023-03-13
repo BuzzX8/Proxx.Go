@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"proxx/proxx"
+	"proxx/lib"
 	"strconv"
 )
 
@@ -11,16 +11,16 @@ func main() {
 	board := generateBoard(3, 3)
 	renderBoard(&board)
 
-	for board.GameState() == proxx.InProgress {
+	for board.GameState() == lib.InProgress {
 		column, row := getUserInput()
 		board.OpenCell(column, row)
 		renderBoard(&board)
 	}
 
 	switch board.GameState() {
-	case proxx.Lost:
+	case lib.Lost:
 		fmt.Println("You lost")
-	case proxx.Won:
+	case lib.Won:
 		fmt.Println("You won")
 	}
 }
@@ -42,27 +42,27 @@ func getUserInput() (column, row int) {
 	return
 }
 
-func generateBoard(size, holeCount int) proxx.Board {
+func generateBoard(size, holeCount int) lib.Board {
 	holesPosition := make([]struct{ column, row int }, holeCount)
 
 	for i := 0; i < int(holeCount); i++ {
 
 	}
 
-	board, _ := proxx.NewBoard(size, func(column, row int) proxx.Cell {
+	board, _ := lib.NewBoard(size, func(column, row int) lib.Cell {
 		for _, hole := range holesPosition {
 			if hole.column == column && hole.row == row {
-				return proxx.NewHoleCell()
+				return lib.NewHoleCell()
 			}
 		}
-		cell, _ := proxx.NewCell(rand.Intn(4))
+		cell, _ := lib.NewCell(rand.Intn(4))
 		return cell
 	})
 
 	return board
 }
 
-func renderBoard(board *proxx.Board) {
+func renderBoard(board *lib.Board) {
 	for row := 0; row < board.Size(); row++ {
 		for column := 0; column < board.Size(); column++ {
 			cell, _ := board.GetCell(column, row)
@@ -74,7 +74,7 @@ func renderBoard(board *proxx.Board) {
 	}
 }
 
-func renderCell(cell *proxx.Cell) {
+func renderCell(cell *lib.Cell) {
 	switch {
 	case !cell.IsOpen():
 		fmt.Print(" ")
