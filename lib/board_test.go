@@ -6,10 +6,8 @@ func TestNewBoard(t *testing.T) {
 	board := createDefaultBoard()
 
 	for i, c := range board.cells {
-		for j, r := range c {
-			if val, _ := r.Value(); val != board.cells[i][j].value {
-				t.Errorf("invalid cell value")
-			}
+		if val, _ := c.Value(); val != board.cells[i].value {
+			t.Errorf("invalid cell value")
 		}
 	}
 }

@@ -13,7 +13,7 @@ const (
 )
 
 type Board struct {
-	cells [][]Cell
+	cells []Cell
 	size  int
 }
 
@@ -22,12 +22,11 @@ func NewBoard(size int, generator CellGenerator) (Board, error) {
 		return Board{}, errors.New("invalid board size")
 	}
 
-	cells := make([][]Cell, size)
+	cells := make([]Cell, size*size)
 
 	for column := 0; column < size; column++ {
-		cells[column] = make([]Cell, size)
 		for row := 0; row < size; row++ {
-			cells[column][row] = generator(column, row)
+			cells[getIndex(column, row, size)] = generator(column, row)
 		}
 	}
 
@@ -39,23 +38,19 @@ func (board *Board) GetCell(column, row int) (*Cell, error) {
 		return nil, errors.New("index out of bounds")
 	}
 
-	return &board.cells[column][row], nil
+	return &board.cells[getIndex(column, row, board.size)], nil
 }
 
 func (board *Board) GameState() GameState {
-	for _, cols := range board.cells {
-		for _, cell := range cols {
-			if cell.isHole && cell.isOpen {
-				return Lost
-			}
+	for _, cell := range board.cells {
+		if cell.isHole && cell.isOpen {
+			return Lost
 		}
 	}
 
-	for _, cols := range board.cells {
-		for _, cell := range cols {
-			if !cell.isHole && !cell.isOpen {
-				return InProgress
-			}
+	for _, cell := range board.cells {
+		if !cell.isHole && !cell.isOpen {
+			return InProgress
 		}
 	}
 
@@ -67,7 +62,7 @@ func (board *Board) OpenCell(column, row int) error {
 		return errors.New("invalid arguments")
 	}
 
-	cell := &board.cells[column][row]
+	cell := &board.cells[getIndex(column, row, board.size)]
 	cell.isOpen = true
 	adjCells := board.getAdjectentCells(column, row)
 
@@ -100,11 +95,15 @@ func (board *Board) getAdjectentCells(column, row int) []*Cell {
 				continue
 			}
 
-			adjCells = append(adjCells, &board.cells[cIndx][rIndx])
+			adjCells = append(adjCells, &board.cells[getIndex(column, row, board.size)])
 		}
 	}
 
 	return adjCells
+}
+
+func getIndex(column, row, size int) int {
+	return size*column + row
 }
 
 func (board *Board) Size() int {
